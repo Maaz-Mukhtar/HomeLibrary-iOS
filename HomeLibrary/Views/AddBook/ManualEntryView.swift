@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import UIKit
 
 struct ManualEntryView: View {
     @Environment(\.modelContext) private var modelContext
@@ -73,25 +74,51 @@ struct ManualEntryView: View {
     private func saveBookConfirmed() {
         isSaving = true
 
-        let book = Book(
-            title: formData.title.trimmingCharacters(in: .whitespacesAndNewlines),
-            authors: formData.authorsArray,
-            genre: formData.genre.isEmpty ? nil : formData.genre,
-            coverImageData: formData.coverImageData,
-            isbn: formData.isbn.isEmpty ? nil : formData.isbn,
-            location: formData.bookLocation,
-            notes: formData.notes.isEmpty ? nil : formData.notes,
-            tagNames: formData.selectedTags,
-            isFavorite: formData.isFavorite
-        )
+        Task {
+            // Download cover image if we have a URL but no local data
+            var coverData = formData.coverImageData
+            if coverData == nil, let urlString = formData.coverImageURL,
+               let url = URL(string: urlString) {
+                coverData = await downloadImage(from: url)
+            }
 
-        modelContext.insert(book)
+            await MainActor.run {
+                let book = Book(
+                    title: formData.title.trimmingCharacters(in: .whitespacesAndNewlines),
+                    authors: formData.authorsArray,
+                    genre: formData.genre.isEmpty ? nil : formData.genre,
+                    coverImageData: coverData,
+                    coverImageURL: formData.coverImageURL,
+                    isbn: formData.isbn.isEmpty ? nil : formData.isbn,
+                    location: formData.bookLocation,
+                    notes: formData.notes.isEmpty ? nil : formData.notes,
+                    tagNames: formData.selectedTags,
+                    isFavorite: formData.isFavorite
+                )
 
-        // Haptic feedback
-        let generator = UINotificationFeedbackGenerator()
-        generator.notificationOccurred(.success)
+                modelContext.insert(book)
 
-        dismiss()
+                // Haptic feedback
+                let generator = UINotificationFeedbackGenerator()
+                generator.notificationOccurred(.success)
+
+                dismiss()
+            }
+        }
+    }
+
+    private func downloadImage(from url: URL) async -> Data? {
+        do {
+            let (data, _) = try await URLSession.shared.data(from: url)
+            // Compress the image
+            if let uiImage = UIImage(data: data),
+               let compressed = uiImage.jpegData(compressionQuality: 0.7) {
+                return compressed
+            }
+            return data
+        } catch {
+            return nil
+        }
     }
 
     private func checkForDuplicate() -> Book? {
