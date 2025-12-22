@@ -17,6 +17,7 @@ struct BarcodeScannerView: View {
     @State private var showingResult = false
     @State private var lookupResult: BookAPIService.BookLookupResult?
     @State private var isLoading = false
+    @State private var loadingStatus = "Looking up ISBN..."
     @State private var errorMessage: String?
 
     let onBookFound: (BookAPIService.BookLookupResult) -> Void
@@ -187,9 +188,10 @@ struct BarcodeScannerView: View {
                 ProgressView()
                     .scaleEffect(1.5)
                     .tint(.white)
-                Text("Looking up book...")
+                Text(loadingStatus)
                     .foregroundStyle(.white)
                     .font(.headline)
+                    .multilineTextAlignment(.center)
             }
         }
     }
@@ -262,11 +264,20 @@ struct BarcodeScannerView: View {
 
     private func lookupBook(isbn: String) {
         isLoading = true
+        loadingStatus = "Looking up ISBN..."
 
         Task {
             do {
                 let apiService = BookAPIService()
-                let result = try await apiService.lookupByISBN(isbn)
+                let result = try await apiService.lookupByISBNFast(isbn)
+
+                await MainActor.run {
+                    loadingStatus = "Found: \(result.title)"
+                }
+
+                // Show result immediately, let ScanResultView load image async
+                try await Task.sleep(for: .milliseconds(300)) // Brief pause to show title
+
                 await MainActor.run {
                     isLoading = false
                     lookupResult = result

@@ -82,6 +82,33 @@ actor BookAPIService {
         throw APIError.noResults
     }
 
+    /// Fast lookup that returns immediately without downloading cover image
+    /// Use this for progressive loading where image loads async in UI
+    func lookupByISBNFast(_ isbn: String) async throws -> BookLookupResult {
+        let cleanISBN = isbn.replacingOccurrences(of: "[^0-9X]", with: "", options: .regularExpression)
+
+        // Check cache (may have image from previous full lookup)
+        if let cached = cache[cleanISBN], !cached.isExpired {
+            return cached.result
+        }
+
+        // Try Open Library first (often has better cover images)
+        if let result = try? await fetchFromOpenLibrary(isbn: cleanISBN) {
+            // Cache without image - image will be loaded async by UI
+            cache[cleanISBN] = CachedResult(result: result, timestamp: Date())
+            return result
+        }
+
+        // Fallback to Google Books
+        if let result = try? await fetchFromGoogleBooks(query: "isbn:\(cleanISBN)") {
+            // Cache without image - image will be loaded async by UI
+            cache[cleanISBN] = CachedResult(result: result, timestamp: Date())
+            return result
+        }
+
+        throw APIError.noResults
+    }
+
     // MARK: - Image Download
 
     private func downloadCoverImage(for result: BookLookupResult) async -> BookLookupResult {
