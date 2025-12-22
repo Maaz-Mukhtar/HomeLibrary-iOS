@@ -10,7 +10,8 @@ import PhotosUI
 
 // MARK: - Book Form Data
 
-struct BookFormData {
+struct BookFormData: Identifiable, Hashable {
+    var id = UUID()
     var title: String = ""
     var authors: String = ""
     var genre: String = ""
@@ -30,7 +31,7 @@ struct BookFormData {
     var coverImageData: Data?
     var coverImageURL: String?
 
-    enum LocationType: String, CaseIterable {
+    enum LocationType: String, CaseIterable, Hashable {
         case none = "None"
         case predefined = "Saved Location"
         case custom = "Custom"

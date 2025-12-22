@@ -9,6 +9,8 @@ import SwiftUI
 
 struct AddBookView: View {
     @State private var showManualEntry = false
+    @State private var showBarcodeScanner = false
+    @State private var scannedBookData: BookFormData?
 
     var body: some View {
         ScrollView {
@@ -44,11 +46,9 @@ struct AddBookView: View {
                         icon: "barcode.viewfinder",
                         title: "Scan Barcode",
                         description: "Scan the ISBN barcode",
-                        color: .green,
-                        isDisabled: true,
-                        disabledReason: "Coming in Phase 4"
+                        color: .green
                     ) {
-                        // TODO: Implement in Phase 4
+                        showBarcodeScanner = true
                     }
 
                     EntryMethodCard(
@@ -80,6 +80,21 @@ struct AddBookView: View {
         .navigationTitle("Add Book")
         .navigationDestination(isPresented: $showManualEntry) {
             ManualEntryView()
+        }
+        .navigationDestination(item: $scannedBookData) { formData in
+            ManualEntryView(initialData: formData)
+        }
+        .fullScreenCover(isPresented: $showBarcodeScanner) {
+            BarcodeScannerView { result in
+                // Convert API result to form data
+                var formData = BookFormData()
+                formData.title = result.title
+                formData.authors = result.authors.joined(separator: ", ")
+                formData.genre = result.genre ?? ""
+                formData.isbn = result.isbn ?? ""
+                formData.coverImageURL = result.coverImageURL
+                scannedBookData = formData
+            }
         }
     }
 }

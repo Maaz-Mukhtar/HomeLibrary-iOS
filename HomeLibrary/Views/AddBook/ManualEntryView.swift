@@ -16,10 +16,14 @@ struct ManualEntryView: View {
     @Query private var tags: [UserTag]
     @Query private var books: [Book]
 
-    @State private var formData = BookFormData()
+    @State private var formData: BookFormData
     @State private var showDuplicateWarning = false
     @State private var duplicateBook: Book?
     @State private var isSaving = false
+
+    init(initialData: BookFormData = BookFormData()) {
+        _formData = State(initialValue: initialData)
+    }
 
     var body: some View {
         BookFormView(

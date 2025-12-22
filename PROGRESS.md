@@ -7,7 +7,7 @@
 | Phase 1 | ✅ Complete | Core Foundation |
 | Phase 2 | ✅ Complete | Library Display |
 | Phase 3 | ✅ Complete | Search & Filtering |
-| Phase 4 | ⏳ Pending | Barcode Scanning |
+| Phase 4 | ✅ Complete | Barcode Scanning |
 | Phase 5 | ⏳ Pending | OCR Features |
 | Phase 6 | ⏳ Pending | Settings & Organization |
 | Phase 7 | ⏳ Pending | Polish & Duplicate Detection |
@@ -130,41 +130,41 @@
 
 ---
 
-## Phase 4: Barcode Scanning ⏳
+## Phase 4: Barcode Scanning ✅
 
 ### Camera Service
-- [ ] CameraService for permission handling
-- [ ] Check permission status
-- [ ] Request permission with callback
-- [ ] Handle denied state gracefully
-- [ ] CameraPermissionView component
+- [x] CameraService for permission handling
+- [x] Check permission status
+- [x] Request permission with callback
+- [x] Handle denied state gracefully
+- [x] CameraPermissionView component
 
 ### Barcode Scanner
-- [ ] BarcodeScannerService with AVFoundation
-- [ ] Support EAN-13, EAN-8, UPC-E, Code-128
-- [ ] ISBN validation (10 or 13 digits)
-- [ ] Duplicate scan prevention
-- [ ] BarcodeScannerView (UIViewControllerRepresentable)
-- [ ] Fullscreen camera preview
-- [ ] Scanning guide overlay
-- [ ] Close button
-- [ ] Flash toggle
-- [ ] Haptic feedback on successful scan
+- [x] BarcodeScannerService with AVFoundation
+- [x] Support EAN-13, EAN-8, UPC-E, Code-128
+- [x] ISBN validation (10 or 13 digits)
+- [x] Duplicate scan prevention
+- [x] BarcodeScannerView (UIViewControllerRepresentable)
+- [x] Fullscreen camera preview
+- [x] Scanning guide overlay
+- [x] Close button
+- [x] Flash toggle
+- [x] Haptic feedback on successful scan
 
 ### API Integration
-- [ ] BookAPIService actor
-- [ ] Open Library API integration
-- [ ] Google Books API integration
-- [ ] Response caching (1 hour TTL)
-- [ ] Error handling
-- [ ] Graceful offline degradation
+- [x] BookAPIService actor
+- [x] Open Library API integration
+- [x] Google Books API integration
+- [x] Response caching (1 hour TTL)
+- [x] Error handling
+- [x] Graceful offline degradation
 
 ### Scan Flow
-- [ ] Scan → Validate → Loading → API Lookup
-- [ ] ScanResultView with found book info
-- [ ] Prefill BookFormView with results
-- [ ] "Not the right book?" option
-- [ ] Fallback to manual entry
+- [x] Scan → Validate → Loading → API Lookup
+- [x] ScanResultView with found book info
+- [x] Prefill BookFormView with results
+- [x] "Not the right book?" option
+- [x] Fallback to manual entry
 
 ---
 
