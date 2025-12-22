@@ -16,6 +16,7 @@ struct LibraryView: View {
     @Query private var allSettings: [AppSettings]
 
     @State private var searchText = ""
+    @State private var debouncedSearchText = ""
     @State private var viewMode: ViewMode = .grid
     @State private var sortBy: SortOption = .dateAdded
     @State private var sortOrder: SortOrder = .descending
@@ -29,10 +30,10 @@ struct LibraryView: View {
     private var filteredBooks: [Book] {
         var result = books
 
-        // Apply search query
-        if !searchText.isEmpty {
+        // Apply search query (uses debounced value)
+        if !debouncedSearchText.isEmpty {
             var tempFilter = filterState
-            tempFilter.searchQuery = searchText
+            tempFilter.searchQuery = debouncedSearchText
             result = result.filter { tempFilter.matches($0, locations: locations) }
         } else if filterState.hasActiveFilters {
             result = result.filter { filterState.matches($0, locations: locations) }
@@ -167,6 +168,21 @@ struct LibraryView: View {
         }
         .onAppear {
             loadSettings()
+        }
+        .task(id: searchText) {
+            // Debounce search input by 300ms
+            do {
+                try await Task.sleep(for: .milliseconds(300))
+                debouncedSearchText = searchText
+            } catch {
+                // Task was cancelled (user typed again)
+            }
+        }
+        .onChange(of: searchText) { _, newValue in
+            // Clear results immediately when search is cleared
+            if newValue.isEmpty {
+                debouncedSearchText = ""
+            }
         }
         .onChange(of: viewMode) { _, newValue in
             saveViewMode(newValue)

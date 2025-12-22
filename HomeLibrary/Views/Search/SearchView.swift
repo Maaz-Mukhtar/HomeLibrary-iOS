@@ -14,12 +14,13 @@ struct SearchView: View {
     @Query private var locations: [PredefinedLocation]
 
     @State private var searchText = ""
+    @State private var debouncedSearchText = ""
     @FocusState private var isSearchFocused: Bool
 
     private var searchResults: [Book] {
-        guard !searchText.isEmpty else { return [] }
+        guard !debouncedSearchText.isEmpty else { return [] }
 
-        let query = searchText.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
+        let query = debouncedSearchText.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
 
         return books.filter { book in
             book.title.lowercased().contains(query) ||
@@ -58,17 +59,17 @@ struct SearchView: View {
             .padding()
 
             // Results
-            if searchText.isEmpty {
+            if searchText.isEmpty && debouncedSearchText.isEmpty {
                 EmptyStateView(
                     icon: "magnifyingglass",
                     title: "Search Your Library",
                     message: "Find books by title, author, ISBN, tags, or notes"
                 )
-            } else if searchResults.isEmpty {
+            } else if searchResults.isEmpty && !debouncedSearchText.isEmpty {
                 EmptyStateView(
                     icon: "book.closed",
                     title: "No Results",
-                    message: "No books match \"\(searchText)\""
+                    message: "No books match \"\(debouncedSearchText)\""
                 )
             } else {
                 List {
@@ -89,6 +90,21 @@ struct SearchView: View {
         .navigationTitle("Search")
         .onAppear {
             isSearchFocused = true
+        }
+        .task(id: searchText) {
+            // Debounce search input by 300ms
+            do {
+                try await Task.sleep(for: .milliseconds(300))
+                debouncedSearchText = searchText
+            } catch {
+                // Task was cancelled (user typed again)
+            }
+        }
+        .onChange(of: searchText) { _, newValue in
+            // Clear results immediately when search is cleared
+            if newValue.isEmpty {
+                debouncedSearchText = ""
+            }
         }
     }
 }

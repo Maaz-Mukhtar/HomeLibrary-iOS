@@ -6,7 +6,7 @@
 |-------|--------|-------------|
 | Phase 1 | ✅ Complete | Core Foundation |
 | Phase 2 | ✅ Complete | Library Display |
-| Phase 3 | ⏳ Pending | Search & Filtering |
+| Phase 3 | ✅ Complete | Search & Filtering |
 | Phase 4 | ⏳ Pending | Barcode Scanning |
 | Phase 5 | ⏳ Pending | OCR Features |
 | Phase 6 | ⏳ Pending | Settings & Organization |
@@ -101,7 +101,7 @@
 
 ---
 
-## Phase 3: Search & Filtering ⏳
+## Phase 3: Search & Filtering ✅
 
 ### Search
 - [x] Search bar in LibraryView
@@ -126,7 +126,7 @@
 ### Filter State
 - [x] FilterState struct with all filter dimensions
 - [x] matches() function for filtering books
-- [ ] Debounce search input (300ms)
+- [x] Debounce search input (300ms)
 
 ---
 
