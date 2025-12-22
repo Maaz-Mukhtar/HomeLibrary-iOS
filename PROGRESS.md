@@ -5,7 +5,7 @@
 | Phase | Status | Description |
 |-------|--------|-------------|
 | Phase 1 | ✅ Complete | Core Foundation |
-| Phase 2 | ⏳ Pending | Library Display |
+| Phase 2 | ✅ Complete | Library Display |
 | Phase 3 | ⏳ Pending | Search & Filtering |
 | Phase 4 | ⏳ Pending | Barcode Scanning |
 | Phase 5 | ⏳ Pending | OCR Features |
@@ -67,7 +67,7 @@
 
 ---
 
-## Phase 2: Library Display ⏳
+## Phase 2: Library Display ✅
 
 ### Library Views
 - [x] LibraryView with search bar
@@ -82,7 +82,7 @@
 - [x] SortMenuView in toolbar
 - [x] 6 sort options (date, title, author, genre, location, favorites)
 - [x] Ascending/descending toggle
-- [ ] Persist sort preference in AppSettings
+- [x] Persist sort preference in AppSettings
 
 ### Book Detail
 - [x] BookDetailView with full metadata
@@ -97,7 +97,7 @@
 
 ### View Toggle
 - [x] Grid/list view toggle button
-- [ ] Persist view mode in AppSettings
+- [x] Persist view mode in AppSettings
 
 ---
 
@@ -232,9 +232,9 @@
 - [x] Empty state when no tags
 
 ### Preferences
-- [ ] Persist view mode preference
-- [ ] Persist sort preference
-- [ ] Persist sort order preference
+- [x] Persist view mode preference
+- [x] Persist sort preference
+- [x] Persist sort order preference
 
 ---
 

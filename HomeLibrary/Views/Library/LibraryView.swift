@@ -13,6 +13,7 @@ struct LibraryView: View {
     @Query(sort: \Book.dateAdded, order: .reverse) private var books: [Book]
     @Query private var locations: [PredefinedLocation]
     @Query private var tags: [UserTag]
+    @Query private var allSettings: [AppSettings]
 
     @State private var searchText = ""
     @State private var viewMode: ViewMode = .grid
@@ -20,6 +21,10 @@ struct LibraryView: View {
     @State private var sortOrder: SortOrder = .descending
     @State private var filterState = FilterState()
     @State private var showFilters = false
+
+    private var settings: AppSettings? {
+        allSettings.first
+    }
 
     private var filteredBooks: [Book] {
         var result = books
@@ -159,6 +164,50 @@ struct LibraryView: View {
                 availableLocations: locations,
                 availableTags: availableTags
             )
+        }
+        .onAppear {
+            loadSettings()
+        }
+        .onChange(of: viewMode) { _, newValue in
+            saveViewMode(newValue)
+        }
+        .onChange(of: sortBy) { _, newValue in
+            saveSortBy(newValue)
+        }
+        .onChange(of: sortOrder) { _, newValue in
+            saveSortOrder(newValue)
+        }
+    }
+
+    // MARK: - Settings Persistence
+
+    private func loadSettings() {
+        if let settings = settings {
+            viewMode = settings.viewMode
+            sortBy = settings.sortBy
+            sortOrder = settings.sortOrder
+        } else {
+            // Create default settings if none exist
+            let newSettings = AppSettings()
+            modelContext.insert(newSettings)
+        }
+    }
+
+    private func saveViewMode(_ mode: ViewMode) {
+        if let settings = settings {
+            settings.viewMode = mode
+        }
+    }
+
+    private func saveSortBy(_ option: SortOption) {
+        if let settings = settings {
+            settings.sortBy = option
+        }
+    }
+
+    private func saveSortOrder(_ order: SortOrder) {
+        if let settings = settings {
+            settings.sortOrder = order
         }
     }
 
