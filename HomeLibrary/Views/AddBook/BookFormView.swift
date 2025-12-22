@@ -113,7 +113,7 @@ struct BookFormView: View {
                             .cornerRadius(Constants.CornerRadius.medium)
                     } else if let urlString = formData.coverImageURL,
                               let url = URL(string: urlString) {
-                        AsyncImage(url: url) { image in
+                        CachedAsyncImage(url: url) { image in
                             image
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)

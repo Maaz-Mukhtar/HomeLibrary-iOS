@@ -7,6 +7,7 @@
 
 import SwiftUI
 import AVFoundation
+import UIKit
 
 struct BarcodeScannerView: View {
     @Environment(\.dismiss) private var dismiss
@@ -56,6 +57,9 @@ struct BarcodeScannerView: View {
         }
         .onChange(of: scannerService.scannedCode) { _, code in
             if let code = code {
+                // Success haptic on barcode scan
+                let generator = UINotificationFeedbackGenerator()
+                generator.notificationOccurred(.success)
                 lookupBook(isbn: code)
             }
         }
@@ -283,10 +287,22 @@ struct BarcodeScannerView: View {
                     lookupResult = result
                     showingResult = true
                 }
+            } catch let apiError as BookAPIService.APIError {
+                await MainActor.run {
+                    isLoading = false
+                    switch apiError {
+                    case .noResults:
+                        errorMessage = "No book found for ISBN \(isbn). Would you like to try again or enter the details manually?"
+                    case .networkError:
+                        errorMessage = "Network error. Please check your internet connection and try again."
+                    case .invalidURL, .invalidResponse:
+                        errorMessage = "Something went wrong. Please try again or enter the details manually."
+                    }
+                }
             } catch {
                 await MainActor.run {
                     isLoading = false
-                    errorMessage = "Could not find book information for this ISBN. Would you like to try again or enter the details manually?"
+                    errorMessage = "Could not find book information. Please check your internet connection and try again."
                 }
             }
         }
@@ -352,8 +368,8 @@ struct ScanResultView: View {
                             .cornerRadius(Constants.CornerRadius.medium)
                     } else if let urlString = result.coverImageURL,
                               let url = URL(string: urlString) {
-                        // Fallback to AsyncImage if pre-download failed
-                        AsyncImage(url: url) { image in
+                        // Fallback to CachedAsyncImage if pre-download failed
+                        CachedAsyncImage(url: url) { image in
                             image
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)

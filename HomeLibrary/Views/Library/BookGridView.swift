@@ -111,22 +111,15 @@ struct BookCoverImage: View {
                 .resizable()
                 .aspectRatio(contentMode: .fill)
         } else if let urlString = imageURL, let url = URL(string: urlString) {
-            AsyncImage(url: url) { phase in
-                switch phase {
-                case .empty:
-                    PlaceholderCover()
-                        .overlay {
-                            ProgressView()
-                        }
-                case .success(let image):
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                case .failure:
-                    PlaceholderCover()
-                @unknown default:
-                    PlaceholderCover()
-                }
+            CachedAsyncImage(url: url) { image in
+                image
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+            } placeholder: {
+                PlaceholderCover()
+                    .overlay {
+                        ProgressView()
+                    }
             }
         } else {
             PlaceholderCover()

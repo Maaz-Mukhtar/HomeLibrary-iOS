@@ -21,6 +21,7 @@ struct ManualEntryView: View {
     @State private var showDuplicateWarning = false
     @State private var duplicateBook: Book?
     @State private var isSaving = false
+    @State private var navigateToDuplicate = false
 
     init(initialData: BookFormData = BookFormData()) {
         _formData = State(initialValue: initialData)
@@ -46,8 +47,7 @@ struct ManualEntryView: View {
         }
         .alert("Duplicate Book Found", isPresented: $showDuplicateWarning) {
             Button("View Existing") {
-                // Navigate to existing book
-                dismiss()
+                navigateToDuplicate = true
             }
             Button("Save Anyway") {
                 saveBookConfirmed()
@@ -58,6 +58,11 @@ struct ManualEntryView: View {
                 Text("A book with the title \"\(duplicate.title)\" by \(duplicate.authorsDisplay) already exists in your library.")
             }
         }
+        .navigationDestination(isPresented: $navigateToDuplicate) {
+            if let duplicate = duplicateBook {
+                BookDetailView(book: duplicate)
+            }
+        }
     }
 
     private func saveBook() {
@@ -65,6 +70,9 @@ struct ManualEntryView: View {
         if let duplicate = checkForDuplicate() {
             duplicateBook = duplicate
             showDuplicateWarning = true
+            // Warning haptic for duplicate detection
+            let generator = UINotificationFeedbackGenerator()
+            generator.notificationOccurred(.warning)
             return
         }
 
