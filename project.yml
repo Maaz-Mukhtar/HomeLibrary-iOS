@@ -41,15 +41,48 @@ targets:
         SWIFT_EMIT_LOC_STRINGS: YES
         GENERATE_INFOPLIST_FILE: YES
 
+  HomeLibraryTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: HomeLibraryTests
+        excludes:
+          - "**/.DS_Store"
+    dependencies:
+      - target: HomeLibrary
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.maazmukhtar.HomeLibraryTests
+        GENERATE_INFOPLIST_FILE: YES
+
+  HomeLibraryUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: HomeLibraryUITests
+        excludes:
+          - "**/.DS_Store"
+    dependencies:
+      - target: HomeLibrary
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.maazmukhtar.HomeLibraryUITests
+        GENERATE_INFOPLIST_FILE: YES
+
 schemes:
   HomeLibrary:
     build:
       targets:
         HomeLibrary: all
+        HomeLibraryTests: [test]
+        HomeLibraryUITests: [test]
     run:
       config: Debug
     test:
       config: Debug
+      targets:
+        - HomeLibraryTests
+        - HomeLibraryUITests
     profile:
       config: Release
     analyze:
