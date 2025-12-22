@@ -55,8 +55,8 @@ final class HomeLibraryUITests: XCTestCase {
     func testManualEntry_CanOpenForm() throws {
         app.tabBars.buttons["Add"].tap()
 
-        // Tap on Manual Entry
-        app.buttons["Manual Entry"].tap()
+        // Tap on Manual Entry (label includes description)
+        app.buttons["Manual Entry, Enter book details yourself"].tap()
 
         // Verify form appears
         XCTAssertTrue(app.navigationBars["Add Book"].waitForExistence(timeout: 2))
