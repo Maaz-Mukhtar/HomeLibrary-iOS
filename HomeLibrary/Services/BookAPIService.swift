@@ -30,6 +30,7 @@ actor BookAPIService {
         let authors: [String]
         let genre: String?
         let coverImageURL: String?
+        let coverImageData: Data?  // Pre-downloaded image for instant display
         let isbn: String?
         let description: String?
     }
@@ -64,17 +65,45 @@ actor BookAPIService {
 
         // Try Open Library first (often has better cover images)
         if let result = try? await fetchFromOpenLibrary(isbn: cleanISBN) {
-            cache[cleanISBN] = CachedResult(result: result, timestamp: Date())
-            return result
+            // Pre-download the cover image for instant display
+            let resultWithImage = await downloadCoverImage(for: result)
+            cache[cleanISBN] = CachedResult(result: resultWithImage, timestamp: Date())
+            return resultWithImage
         }
 
         // Fallback to Google Books
         if let result = try? await fetchFromGoogleBooks(query: "isbn:\(cleanISBN)") {
-            cache[cleanISBN] = CachedResult(result: result, timestamp: Date())
-            return result
+            // Pre-download the cover image for instant display
+            let resultWithImage = await downloadCoverImage(for: result)
+            cache[cleanISBN] = CachedResult(result: resultWithImage, timestamp: Date())
+            return resultWithImage
         }
 
         throw APIError.noResults
+    }
+
+    // MARK: - Image Download
+
+    private func downloadCoverImage(for result: BookLookupResult) async -> BookLookupResult {
+        guard let urlString = result.coverImageURL,
+              let url = URL(string: urlString) else {
+            return result
+        }
+
+        do {
+            let (data, _) = try await URLSession.shared.data(from: url)
+            return BookLookupResult(
+                title: result.title,
+                authors: result.authors,
+                genre: result.genre,
+                coverImageURL: result.coverImageURL,
+                coverImageData: data,
+                isbn: result.isbn,
+                description: result.description
+            )
+        } catch {
+            return result
+        }
     }
 
     func searchBooks(title: String, author: String? = nil) async throws -> BookLookupResult {
@@ -111,14 +140,16 @@ actor BookAPIService {
 
         let authors = (bookData["authors"] as? [[String: Any]])?.compactMap { $0["name"] as? String } ?? []
         let subjects = (bookData["subjects"] as? [[String: Any]])?.compactMap { $0["name"] as? String }
-        let coverURL = (bookData["cover"] as? [String: Any])?["large"] as? String
-            ?? (bookData["cover"] as? [String: Any])?["medium"] as? String
+
+        // Use Open Library's dedicated covers API for higher quality
+        let highQualityCoverURL = "https://covers.openlibrary.org/b/isbn/\(isbn)-L.jpg"
 
         return BookLookupResult(
             title: title,
             authors: authors,
             genre: mapToGenre(subjects?.first),
-            coverImageURL: coverURL,
+            coverImageURL: highQualityCoverURL,
+            coverImageData: nil,
             isbn: isbn,
             description: nil
         )
@@ -170,10 +201,19 @@ actor BookAPIService {
         let volumeInfo = item.volumeInfo
         guard let title = volumeInfo.title, !title.isEmpty else { return nil }
 
-        let coverURL = volumeInfo.imageLinks?.large
+        var coverURL = volumeInfo.imageLinks?.large
             ?? volumeInfo.imageLinks?.medium
             ?? volumeInfo.imageLinks?.small
             ?? volumeInfo.imageLinks?.thumbnail
+
+        // Enhance Google Books thumbnail to get higher resolution
+        // Remove zoom=1 (thumbnail) and add zoom=0 (full size), also remove edge=curl
+        if var url = coverURL {
+            url = url.replacingOccurrences(of: "http:", with: "https:")
+            url = url.replacingOccurrences(of: "zoom=1", with: "zoom=0")
+            url = url.replacingOccurrences(of: "&edge=curl", with: "")
+            coverURL = url
+        }
 
         let isbn = volumeInfo.industryIdentifiers?.first { $0.type.contains("ISBN") }?.identifier
 
@@ -181,7 +221,8 @@ actor BookAPIService {
             title: title,
             authors: volumeInfo.authors ?? [],
             genre: mapToGenre(volumeInfo.categories?.first),
-            coverImageURL: coverURL?.replacingOccurrences(of: "http:", with: "https:"),
+            coverImageURL: coverURL,
+            coverImageData: nil,
             isbn: isbn,
             description: volumeInfo.description
         )

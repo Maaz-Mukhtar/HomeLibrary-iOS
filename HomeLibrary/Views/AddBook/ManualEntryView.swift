@@ -75,11 +75,16 @@ struct ManualEntryView: View {
         isSaving = true
 
         Task {
-            // Download cover image if we have a URL but no local data
+            // Use existing image data or download if only URL available
             var coverData = formData.coverImageData
+
+            // Only download if we don't have local data
             if coverData == nil, let urlString = formData.coverImageURL,
                let url = URL(string: urlString) {
                 coverData = await downloadImage(from: url)
+            } else if let data = coverData {
+                // Optimize existing image data for storage
+                coverData = optimizeImage(data)
             }
 
             await MainActor.run {
@@ -110,15 +115,31 @@ struct ManualEntryView: View {
     private func downloadImage(from url: URL) async -> Data? {
         do {
             let (data, _) = try await URLSession.shared.data(from: url)
-            // Compress the image
-            if let uiImage = UIImage(data: data),
-               let compressed = uiImage.jpegData(compressionQuality: 0.7) {
-                return compressed
-            }
-            return data
+            return optimizeImage(data)
         } catch {
             return nil
         }
+    }
+
+    private func optimizeImage(_ data: Data) -> Data? {
+        guard let uiImage = UIImage(data: data) else { return data }
+
+        // Resize if too large (max 800px on longest side)
+        let maxSize: CGFloat = 800
+        var targetSize = uiImage.size
+
+        if uiImage.size.width > maxSize || uiImage.size.height > maxSize {
+            let ratio = min(maxSize / uiImage.size.width, maxSize / uiImage.size.height)
+            targetSize = CGSize(width: uiImage.size.width * ratio, height: uiImage.size.height * ratio)
+        }
+
+        let renderer = UIGraphicsImageRenderer(size: targetSize)
+        let resizedImage = renderer.image { _ in
+            uiImage.draw(in: CGRect(origin: .zero, size: targetSize))
+        }
+
+        // Use high quality compression (0.85)
+        return resizedImage.jpegData(compressionQuality: 0.85)
     }
 
     private func checkForDuplicate() -> Book? {

@@ -92,6 +92,7 @@ struct AddBookView: View {
                 formData.authors = result.authors.joined(separator: ", ")
                 formData.genre = result.genre ?? ""
                 formData.isbn = result.isbn ?? ""
+                formData.coverImageData = result.coverImageData  // Pre-downloaded image
                 formData.coverImageURL = result.coverImageURL
                 scannedBookData = formData
             }

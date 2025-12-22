@@ -331,9 +331,17 @@ struct ScanResultView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 24) {
-                    // Cover Image
-                    if let urlString = result.coverImageURL,
-                       let url = URL(string: urlString) {
+                    // Cover Image (pre-downloaded for instant display)
+                    if let imageData = result.coverImageData,
+                       let uiImage = UIImage(data: imageData) {
+                        Image(uiImage: uiImage)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(height: 250)
+                            .cornerRadius(Constants.CornerRadius.medium)
+                    } else if let urlString = result.coverImageURL,
+                              let url = URL(string: urlString) {
+                        // Fallback to AsyncImage if pre-download failed
                         AsyncImage(url: url) { image in
                             image
                                 .resizable()
