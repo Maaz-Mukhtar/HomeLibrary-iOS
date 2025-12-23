@@ -20,11 +20,11 @@ enum AppearanceMode: String, CaseIterable, Identifiable {
 /// User preferences and app settings
 @Model
 final class AppSettings {
-    @Attribute(.unique) var id: String
-    var viewModeRaw: String
-    var sortByRaw: String
-    var sortOrderRaw: String
-    var storageModeRaw: String
+    @Attribute(.unique) var id: String = "app-settings"
+    var viewModeRaw: String = ViewMode.grid.rawValue
+    var sortByRaw: String = SortOption.dateAdded.rawValue
+    var sortOrderRaw: String = SortOrder.descending.rawValue
+    var storageModeRaw: String = "local"
     var appearanceModeRaw: String = AppearanceMode.system.rawValue
 
     var viewMode: ViewMode {
