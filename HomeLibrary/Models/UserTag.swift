@@ -12,11 +12,11 @@ import SwiftUI
 /// A custom user-created tag with a color
 @Model
 final class UserTag {
-    @Attribute(.unique) var id: UUID
-    var name: String
-    var colorHex: String
-    var createdAt: Date
-    var syncStatus: String
+    @Attribute(.unique) var id: UUID = UUID()
+    var name: String = ""
+    var colorHex: String = "#3B82F6"
+    var createdAt: Date = Date()
+    var syncStatus: String = SyncStatus.synced.rawValue
 
     var color: Color {
         Color(hex: colorHex) ?? .blue

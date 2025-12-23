@@ -14,12 +14,12 @@ import SwiftUI
 final class Book {
     // MARK: - Identifiers
 
-    @Attribute(.unique) var id: UUID
+    @Attribute(.unique) var id: UUID = UUID()
 
     // MARK: - Core Information
 
-    var title: String
-    var authors: [String]
+    var title: String = ""
+    var authors: [String] = []
     var genre: String?
     var isbn: String?
 
@@ -32,19 +32,19 @@ final class Book {
     // MARK: - Organization
 
     var locationData: Data?
-    var tagNames: [String]
+    var tagNames: [String] = []
     var notes: String?
-    var isFavorite: Bool
+    var isFavorite: Bool = false
 
     // MARK: - Metadata
 
-    var dateAdded: Date
-    var lastModified: Date
+    var dateAdded: Date = Date()
+    var lastModified: Date = Date()
     var addedBy: String?
 
     // MARK: - Sync (Future Firebase)
 
-    var syncStatus: String
+    var syncStatus: String = SyncStatus.synced.rawValue
     var cloudId: String?
 
     // MARK: - Computed Properties

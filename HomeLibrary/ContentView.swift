@@ -6,9 +6,23 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct ContentView: View {
+    @Query private var allSettings: [AppSettings]
     @State private var selectedTab = 0
+
+    private var settings: AppSettings? {
+        allSettings.first
+    }
+
+    private var preferredColorScheme: ColorScheme? {
+        switch settings?.appearanceMode ?? .system {
+        case .system: return nil
+        case .light: return .light
+        case .dark: return .dark
+        }
+    }
 
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -45,6 +59,7 @@ struct ContentView: View {
             .tag(3)
         }
         .tint(.blue)
+        .preferredColorScheme(preferredColorScheme)
     }
 }
 
