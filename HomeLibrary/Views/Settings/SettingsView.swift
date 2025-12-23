@@ -9,12 +9,37 @@ import SwiftUI
 import SwiftData
 
 struct SettingsView: View {
+    @Environment(\.modelContext) private var modelContext
     @Query private var books: [Book]
     @Query private var locations: [PredefinedLocation]
     @Query private var tags: [UserTag]
+    @Query private var allSettings: [AppSettings]
+
+    private var settings: AppSettings? {
+        allSettings.first
+    }
 
     var body: some View {
         List {
+            // Appearance
+            Section("Appearance") {
+                Picker("Mode", selection: Binding(
+                    get: { settings?.appearanceMode ?? .system },
+                    set: { newValue in
+                        if let settings = settings {
+                            settings.appearanceMode = newValue
+                        } else {
+                            let newSettings = AppSettings()
+                            newSettings.appearanceMode = newValue
+                            modelContext.insert(newSettings)
+                        }
+                    }
+                )) {
+                    ForEach(AppearanceMode.allCases) { mode in
+                        Text(mode.rawValue).tag(mode)
+                    }
+                }
+            }
             // Library Stats
             Section("Library") {
                 HStack {

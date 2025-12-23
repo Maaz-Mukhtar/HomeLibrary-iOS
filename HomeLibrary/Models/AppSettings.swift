@@ -8,6 +8,15 @@
 import Foundation
 import SwiftData
 
+/// Appearance mode for the app
+enum AppearanceMode: String, CaseIterable, Identifiable {
+    case system = "System"
+    case light = "Light"
+    case dark = "Dark"
+
+    var id: String { rawValue }
+}
+
 /// User preferences and app settings
 @Model
 final class AppSettings {
@@ -16,6 +25,7 @@ final class AppSettings {
     var sortByRaw: String
     var sortOrderRaw: String
     var storageModeRaw: String
+    var appearanceModeRaw: String = AppearanceMode.system.rawValue
 
     var viewMode: ViewMode {
         get { ViewMode(rawValue: viewModeRaw) ?? .grid }
@@ -42,12 +52,18 @@ final class AppSettings {
         set { storageModeRaw = newValue.rawValue }
     }
 
+    var appearanceMode: AppearanceMode {
+        get { AppearanceMode(rawValue: appearanceModeRaw) ?? .system }
+        set { appearanceModeRaw = newValue.rawValue }
+    }
+
     init() {
         self.id = "app-settings"
         self.viewModeRaw = ViewMode.grid.rawValue
         self.sortByRaw = SortOption.dateAdded.rawValue
         self.sortOrderRaw = SortOrder.descending.rawValue
         self.storageModeRaw = StorageMode.local.rawValue
+        self.appearanceModeRaw = AppearanceMode.system.rawValue
     }
 }
 
