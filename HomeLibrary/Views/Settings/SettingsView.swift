@@ -24,7 +24,11 @@ struct SettingsView: View {
             // Appearance
             Section("Appearance") {
                 Picker("Mode", selection: Binding(
-                    get: { settings?.appearanceMode ?? .system },
+                    get: {
+                        let mode = settings?.appearanceMode ?? .system
+                        // Show light/dark based on current setting (system shows as light by default in picker)
+                        return mode == .system ? .light : mode
+                    },
                     set: { newValue in
                         if let settings = settings {
                             settings.appearanceMode = newValue
@@ -35,9 +39,17 @@ struct SettingsView: View {
                         }
                     }
                 )) {
-                    ForEach(AppearanceMode.allCases) { mode in
-                        Text(mode.rawValue).tag(mode)
+                    Text("Light").tag(AppearanceMode.light)
+                    Text("Dark").tag(AppearanceMode.dark)
+                }
+                .pickerStyle(.segmented)
+
+                if settings?.appearanceMode != .system && settings != nil {
+                    Button("Use Device Setting") {
+                        settings?.appearanceMode = .system
                     }
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
                 }
             }
             // Library Stats
