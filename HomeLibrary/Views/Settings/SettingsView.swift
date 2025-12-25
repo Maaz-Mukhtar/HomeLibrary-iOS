@@ -10,6 +10,7 @@ import SwiftData
 
 struct SettingsView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.colorScheme) private var colorScheme
     @Query private var books: [Book]
     @Query private var locations: [PredefinedLocation]
     @Query private var tags: [UserTag]
@@ -23,11 +24,14 @@ struct SettingsView: View {
         List {
             // Appearance
             Section("Appearance") {
-                Picker("Mode", selection: Binding(
+                Picker("Mode", selection: Binding<AppearanceMode>(
                     get: {
                         let mode = settings?.appearanceMode ?? .system
-                        // Show light/dark based on current setting (system shows as light by default in picker)
-                        return mode == .system ? .light : mode
+                        // Show current system appearance when in system mode
+                        if mode == .system {
+                            return colorScheme == .dark ? .dark : .light
+                        }
+                        return mode
                     },
                     set: { newValue in
                         if let settings = settings {
