@@ -1,0 +1,25 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1024" height="1024" rx="224" fill="#007AFF"/>
+
+  <!-- Open book base -->
+  <path d="M180 700 Q180 720 200 720 L824 720 Q844 720 844 700 L844 400 Q844 380 824 380 L540 380 L512 340 L484 380 L200 380 Q180 380 180 400 Z" fill="white" opacity="0.95"/>
+
+  <!-- Book center fold -->
+  <path d="M512 340 L512 720" stroke="#007AFF" stroke-width="6" opacity="0.2"/>
+
+  <!-- Left page lines -->
+  <rect x="220" y="440" width="240" height="14" rx="7" fill="#007AFF" opacity="0.15"/>
+  <rect x="220" y="490" width="200" height="14" rx="7" fill="#007AFF" opacity="0.15"/>
+  <rect x="220" y="540" width="220" height="14" rx="7" fill="#007AFF" opacity="0.15"/>
+  <rect x="220" y="590" width="180" height="14" rx="7" fill="#007AFF" opacity="0.15"/>
+
+  <!-- Right page lines -->
+  <rect x="564" y="440" width="240" height="14" rx="7" fill="#007AFF" opacity="0.15"/>
+  <rect x="564" y="490" width="200" height="14" rx="7" fill="#007AFF" opacity="0.15"/>
+  <rect x="564" y="540" width="220" height="14" rx="7" fill="#007AFF" opacity="0.15"/>
+  <rect x="564" y="590" width="180" height="14" rx="7" fill="#007AFF" opacity="0.15"/>
+
+  <!-- House roof above book -->
+  <path d="M512 180 L720 320 L700 320 L512 200 L324 320 L304 320 Z" fill="white" opacity="0.95"/>
+</svg>

@@ -1,0 +1,24 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1024" height="1024" rx="224" fill="#007AFF"/>
+
+  <!-- House roof shape -->
+  <path d="M512 200 L780 400 L780 420 L512 240 L244 420 L244 400 Z" fill="white" opacity="0.95"/>
+
+  <!-- Book shape (main body) -->
+  <rect x="300" y="380" width="424" height="480" rx="20" fill="white" opacity="0.95"/>
+
+  <!-- Book spine -->
+  <rect x="300" y="380" width="60" height="480" rx="20" fill="white" opacity="0.75"/>
+  <line x1="360" y1="400" x2="360" y2="840" stroke="#007AFF" stroke-width="4" opacity="0.3"/>
+
+  <!-- Book pages lines -->
+  <rect x="400" y="450" width="260" height="16" rx="8" fill="#007AFF" opacity="0.2"/>
+  <rect x="400" y="500" width="220" height="16" rx="8" fill="#007AFF" opacity="0.2"/>
+  <rect x="400" y="550" width="240" height="16" rx="8" fill="#007AFF" opacity="0.2"/>
+  <rect x="400" y="600" width="180" height="16" rx="8" fill="#007AFF" opacity="0.2"/>
+
+  <!-- Small house icon on book -->
+  <path d="M512 680 L600 740 L600 820 L424 820 L424 740 Z" fill="#007AFF" opacity="0.3"/>
+  <rect x="480" y="760" width="64" height="60" fill="#007AFF" opacity="0.4"/>
+</svg>
