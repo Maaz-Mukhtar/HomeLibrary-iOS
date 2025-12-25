@@ -65,12 +65,18 @@ struct SearchView: View {
                     title: "Search Your Library",
                     message: "Find books by title, author, ISBN, tags, or notes"
                 )
+                .onTapGesture {
+                    isSearchFocused = false
+                }
             } else if searchResults.isEmpty && !debouncedSearchText.isEmpty {
                 EmptyStateView(
                     icon: "book.closed",
                     title: "No Results",
                     message: "No books match \"\(debouncedSearchText)\""
                 )
+                .onTapGesture {
+                    isSearchFocused = false
+                }
             } else {
                 List {
                     Section("\(searchResults.count) result\(searchResults.count == 1 ? "" : "s")") {
@@ -82,12 +88,21 @@ struct SearchView: View {
                     }
                 }
                 .listStyle(.plain)
+                .scrollDismissesKeyboard(.interactively)
                 .navigationDestination(for: Book.self) { book in
                     BookDetailView(book: book)
                 }
             }
         }
         .navigationTitle("Search")
+        .toolbar {
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button("Done") {
+                    isSearchFocused = false
+                }
+            }
+        }
         .onAppear {
             isSearchFocused = true
         }
